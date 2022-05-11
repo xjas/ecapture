@@ -311,3 +311,40 @@ int probe_connect(struct pt_regs* ctx) {
                           sizeof(struct connect_event_t));
     return 0;
 }
+
+// SSL_CTX_set_keylog_callback
+//  typedef void (*SSL_CTX_keylog_cb_func)(const SSL *ssl, const char *line);
+/*
+nss_keylog_int(const char *prefix,
+                          SSL *ssl,
+                          const uint8_t *parameter_1,
+                          size_t parameter_1_len,
+                          const uint8_t *parameter_2,
+                          size_t parameter_2_len)
+*/
+SEC("uprobe/CTX_set_keylog")
+int probe_set_keylog(struct pt_regs* ctx) {
+    bpf_printk("nss_keylog_int!!!!:\n");
+    u64 current_pid_tgid = bpf_get_current_pid_tgid();
+    u32 pid = current_pid_tgid >> 32;
+    #ifndef KERNEL_LESS_5_2
+        // if target_ppid is 0 then we target all pids
+        if (target_pid != 0 && target_pid != pid) {
+            return 0;
+        }
+    #endif
+
+    const char *fd = (const char *)PT_REGS_PARM1(ctx);
+    const char *parameter_1 = (const char *)PT_REGS_PARM3(ctx);
+    u64 parameter_1_len = (u64)PT_REGS_PARM4(ctx);
+    const char *parameter_2 = (const char *)PT_REGS_PARM5(ctx);
+//    const char *line = (struct sockaddr *)PT_REGS_PARM2(ctx);
+    if (!fd) {
+        return 0;
+    }
+
+    bpf_printk("@ keylog info:%s\n", fd);
+    bpf_printk("@ keylog parameter_1 len:%d, sizeof:%d\n", parameter_1_len, sizeof(parameter_1));
+//    bpf_printk("@ keylog parameter_2:%s\n", parameter_2);
+    return 0;
+}
