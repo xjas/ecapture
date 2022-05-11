@@ -327,24 +327,25 @@ int probe_set_keylog(struct pt_regs* ctx) {
     bpf_printk("nss_keylog_int!!!!:\n");
     u64 current_pid_tgid = bpf_get_current_pid_tgid();
     u32 pid = current_pid_tgid >> 32;
-    #ifndef KERNEL_LESS_5_2
-        // if target_ppid is 0 then we target all pids
-        if (target_pid != 0 && target_pid != pid) {
-            return 0;
-        }
-    #endif
+#ifndef KERNEL_LESS_5_2
+    // if target_ppid is 0 then we target all pids
+    if (target_pid != 0 && target_pid != pid) {
+        return 0;
+    }
+#endif
 
-    const char *fd = (const char *)PT_REGS_PARM1(ctx);
-    const char *parameter_1 = (const char *)PT_REGS_PARM3(ctx);
+    const char* fd = (const char*)PT_REGS_PARM1(ctx);
+    const char* parameter_1 = (const char*)PT_REGS_PARM3(ctx);
     u64 parameter_1_len = (u64)PT_REGS_PARM4(ctx);
-    const char *parameter_2 = (const char *)PT_REGS_PARM5(ctx);
-//    const char *line = (struct sockaddr *)PT_REGS_PARM2(ctx);
+    const char* parameter_2 = (const char*)PT_REGS_PARM5(ctx);
+    //    const char *line = (struct sockaddr *)PT_REGS_PARM2(ctx);
     if (!fd) {
         return 0;
     }
 
     bpf_printk("@ keylog info:%s\n", fd);
-    bpf_printk("@ keylog parameter_1 len:%d, sizeof:%d\n", parameter_1_len, sizeof(parameter_1));
-//    bpf_printk("@ keylog parameter_2:%s\n", parameter_2);
+    bpf_printk("@ keylog parameter_1 len:%d, sizeof:%d\n", parameter_1_len,
+               sizeof(parameter_1));
+    //    bpf_printk("@ keylog parameter_2:%s\n", parameter_2);
     return 0;
 }
