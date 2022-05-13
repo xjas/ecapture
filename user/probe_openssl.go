@@ -160,6 +160,7 @@ func (this *MOpenSSLProbe) setupManagers() error {
 				BinaryPath:       libPthread,
 			},
 			{
+				// SSLKEYLOGFILE=/tmp/c.txt curl 'https://www.cnxct.com/?f=ecapture'
 				Section:          "uprobe/keylog_int",
 				EbpfFuncName:     "probe_keylog_init",
 				AttachToFuncName: "NOTNEED",
