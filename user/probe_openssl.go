@@ -159,6 +159,21 @@ func (this *MOpenSSLProbe) setupManagers() error {
 				AttachToFuncName: "connect",
 				BinaryPath:       libPthread,
 			},
+			{
+				Section:          "uprobe/keylog_int",
+				EbpfFuncName:     "probe_keylog_init",
+				AttachToFuncName: "NOTNEED",
+				UprobeOffset:     0x3B4E0, //
+				BinaryPath:       binaryPath,
+			},
+			// SSL_CTX_new	.text	0000000000042130	0000057D	00000038	00000000	R	.	.	.	.	.	.	.
+			//{
+			//	Section:          "uprobe/SSL_CTX_new",
+			//	EbpfFuncName:     "probe_SSL_CTX_new",
+			//	AttachToFuncName: "?????",
+			//	UprobeOffset:     0x42130,
+			//	BinaryPath:       binaryPath,
+			//},
 		},
 
 		Maps: []*manager.Map{

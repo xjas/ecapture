@@ -322,8 +322,8 @@ nss_keylog_int(const char *prefix,
                           const uint8_t *parameter_2,
                           size_t parameter_2_len)
 */
-SEC("uprobe/CTX_set_keylog")
-int probe_set_keylog(struct pt_regs* ctx) {
+SEC("uprobe/keylog_int")
+int probe_keylog_init(struct pt_regs* ctx) {
     bpf_printk("nss_keylog_int!!!!:\n");
     u64 current_pid_tgid = bpf_get_current_pid_tgid();
     u32 pid = current_pid_tgid >> 32;
